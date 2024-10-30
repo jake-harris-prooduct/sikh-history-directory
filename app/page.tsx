@@ -1,9 +1,9 @@
+// app/page.tsx
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
-import { 
-  Card,
-  CardContent
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -12,13 +12,28 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const Directory = () => {
-  const [figures, setFigures] = useState([]);
-  const [filteredFigures, setFilteredFigures] = useState([]);
+interface HistoricalFigure {
+  id: number;
+  englishName: string;
+  punjabiName: string;
+  birthYear: number;
+  deathYear: number;
+  oneLiner: string;
+  knownFor: string;
+  tags: string;
+  notableAssociates: string;
+  imageUrl: string;
+}
+
+export default function Home() {
+  const [figures, setFigures] = useState<HistoricalFigure[]>([]);
+  const [filteredFigures, setFilteredFigures] = useState<HistoricalFigure[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTag, setSelectedTag] = useState('all');
-  const [availableTags, setAvailableTags] = useState([]);
-  const [expandedFigure, setExpandedFigure] = useState(null);
+  const [availableTags, setAvailableTags] = useState<string[]>([]);
+  const [expandedFigure, setExpandedFigure] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchFigures();
@@ -30,18 +45,25 @@ const Directory = () => {
 
   const fetchFigures = async () => {
     try {
+      setIsLoading(true);
       const response = await fetch('/api/figures');
+      if (!response.ok) {
+        throw new Error('Failed to fetch figures');
+      }
       const data = await response.json();
       setFigures(data);
       
       // Extract unique tags
-      const tags = new Set();
-      data.forEach(figure => {
+      const tags = new Set<string>();
+      data.forEach((figure: HistoricalFigure) => {
         figure.tags.split(',').forEach(tag => tags.add(tag.trim()));
       });
       setAvailableTags(Array.from(tags));
+      setIsLoading(false);
     } catch (error) {
       console.error('Error fetching figures:', error);
+      setError(error instanceof Error ? error.message : 'An error occurred');
+      setIsLoading(false);
     }
   };
 
@@ -64,77 +86,141 @@ const Directory = () => {
     }
 
     // Sort by death year
-    filtered.sort((a, b) => a.deathYear - b.deathYear);
+    filtered.sort((a, b) => (a.deathYear || 0) - (b.deathYear || 0));
 
     setFilteredFigures(filtered);
   };
 
-  return (
-    <div className="container mx-auto p-4">
-      <div className="flex flex-col md:flex-row gap-4 mb-6">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search by name..."
-            className="pl-10 w-full h-10 rounded-md border border-gray-300 focus:outline-none focus:ring-2"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="container mx-auto px-4 text-center">
+          <h1 className="text-3xl font-bold mb-8">Sikh Historical Figures</h1>
+          <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-md">
+            {error}
+          </div>
         </div>
-        <Select
-          value={selectedTag}
-          onValueChange={setSelectedTag}
-        >
-          <SelectTrigger className="w-48">
-            <SelectValue placeholder="Filter by tag" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Tags</SelectItem>
-            {availableTags.map(tag => (
-              <SelectItem key={tag} value={tag}>{tag}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
       </div>
+    );
+  }
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {filteredFigures.map((figure) => (
-          <Card 
-            key={figure.id}
-            className="cursor-pointer transition-all duration-300"
-            onClick={() => setExpandedFigure(expandedFigure === figure.id ? null : figure.id)}
-          >
-            <CardContent className="p-4">
-              <div className="aspect-square relative mb-4">
-                <img
-                  src={figure.imageUrl || "/api/placeholder/400/400"}
-                  alt={figure.englishName}
-                  className="w-full h-full object-cover rounded-md"
-                />
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="container mx-auto px-4">
+          <h1 className="text-3xl font-bold text-center mb-8">
+            Sikh Historical Figures
+          </h1>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className="animate-pulse">
+                <div className="bg-gray-200 aspect-square rounded-md mb-4"></div>
+                <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
               </div>
-              <h3 className="text-lg font-semibold">{figure.englishName}</h3>
-              <h4 className="text-md">{figure.punjabiName}</h4>
-              <p className="text-sm text-gray-600">
-                {figure.birthYear} - {figure.deathYear}
-              </p>
-              
-              {/* Hover content */}
-              <p className="mt-2 text-sm">{figure.oneLiner}</p>
-              
-              {/* Expanded content */}
-              {expandedFigure === figure.id && (
-                <div className="mt-4 space-y-2">
-                  <p className="text-sm"><strong>Known for:</strong> {figure.knownFor}</p>
-                  <p className="text-sm"><strong>Notable Associates:</strong> {figure.notableAssociates}</p>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="container mx-auto px-4">
+        <h1 className="text-3xl font-bold text-center mb-8">
+          Sikh Historical Figures
+        </h1>
+        
+        <div className="flex flex-col md:flex-row gap-4 mb-6">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search by name..."
+              className="pl-10 w-full h-10 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          
+          <Select
+            value={selectedTag}
+            onValueChange={setSelectedTag}
+          >
+            <SelectTrigger className="w-full md:w-48">
+              <SelectValue placeholder="Filter by tag" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Tags</SelectItem>
+              {availableTags.map(tag => (
+                <SelectItem key={tag} value={tag}>{tag}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {filteredFigures.map((figure) => (
+            <Card 
+              key={figure.id}
+              className="cursor-pointer transition-all duration-300 hover:shadow-lg"
+              onClick={() => setExpandedFigure(expandedFigure === figure.id ? null : figure.id)}
+            >
+              <CardContent className="p-4">
+                <div className="aspect-square relative mb-4">
+                  <img
+                    src={figure.imageUrl || "/api/placeholder/400/400"}
+                    alt={figure.englishName}
+                    className="w-full h-full object-cover rounded-md"
+                  />
                 </div>
-              )}
-            </CardContent>
-          </Card>
-        ))}
+                <h3 className="text-lg font-semibold">{figure.englishName}</h3>
+                <h4 className="text-md text-gray-600">{figure.punjabiName}</h4>
+                <p className="text-sm text-gray-500">
+                  {figure.birthYear} - {figure.deathYear}
+                </p>
+                
+                {/* Hover content */}
+                <p className="mt-2 text-sm text-gray-600">{figure.oneLiner}</p>
+                
+                {/* Expanded content */}
+                {expandedFigure === figure.id && (
+                  <div className="mt-4 space-y-2 border-t pt-4">
+                    <div>
+                      <h5 className="text-sm font-semibold">Known for:</h5>
+                      <p className="text-sm text-gray-600">{figure.knownFor}</p>
+                    </div>
+                    <div>
+                      <h5 className="text-sm font-semibold">Notable Associates:</h5>
+                      <p className="text-sm text-gray-600">{figure.notableAssociates}</p>
+                    </div>
+                    <div>
+                      <h5 className="text-sm font-semibold">Tags:</h5>
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {figure.tags.split(',').map((tag, index) => (
+                          <span
+                            key={index}
+                            className="px-2 py-1 text-xs bg-gray-100 rounded-full text-gray-600"
+                          >
+                            {tag.trim()}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        
+        {filteredFigures.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-gray-500">No historical figures found matching your criteria.</p>
+          </div>
+        )}
       </div>
     </div>
   );
-};
-
-export default Directory;
+}
