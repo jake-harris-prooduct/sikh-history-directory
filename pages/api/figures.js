@@ -1,5 +1,4 @@
 // pages/api/figures.js
-import { google } from 'googleapis';
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -7,20 +6,20 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Auth configuration
-    const auth = new google.auth.GoogleAuth({
-      credentials: JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_KEY),
-      scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
-    });
+    const API_KEY = process.env.GOOGLE_SHEETS_API_KEY;
+    const SPREADSHEET_ID = process.env.GOOGLE_SHEET_ID;
+    const RANGE = 'Sheet1!A2:I';
 
-    const sheets = google.sheets({ version: 'v4', auth });
+    const response = await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${RANGE}?key=${API_KEY}`
+    );
 
-    const response = await sheets.spreadsheets.values.get({
-      spreadsheetId: process.env.SPREADSHEET_ID,
-      range: 'Sheet1!A2:I', // Assuming headers are in row 1
-    });
+    if (!response.ok) {
+      throw new Error(`Google Sheets API error: ${response.statusText}`);
+    }
 
-    const rows = response.data.values;
+    const data = await response.json();
+    const rows = data.values || [];
 
     const figures = rows.map((row, index) => ({
       id: index + 1,
@@ -37,7 +36,10 @@ export default async function handler(req, res) {
 
     res.status(200).json(figures);
   } catch (error) {
-    console.error('API Error:', error);
-    res.status(500).json({ message: 'Error fetching data from Google Sheets' });
+    console.error('Error fetching spreadsheet data:', error);
+    res.status(500).json({ 
+      message: 'Error fetching data from Google Sheets',
+      error: error.message 
+    });
   }
 }
