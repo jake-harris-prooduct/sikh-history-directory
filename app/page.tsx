@@ -48,7 +48,7 @@ export default function Home() {
       setIsLoading(true);
       const response = await fetch('pages/api/figures');
       if (!response.ok) {
-        throw new Error('Failed to fetch figures');
+       throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
       setFigures(data);
