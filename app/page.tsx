@@ -43,15 +43,25 @@ export default function Home() {
     filterFigures();
   }, [searchTerm, selectedTag, figures]);
 
+  // Your main page component
+const [figures, setFigures] = useState([]);
+
+useEffect(() => {
   const fetchFigures = async () => {
     try {
-      setIsLoading(true);
-      const response = await fetch('pages/api/figures');
+      const response = await fetch('/api/figures');
       if (!response.ok) {
-        throw new Error('Failed to fetch figures');
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
       setFigures(data);
+    } catch (error) {
+      console.error('Error fetching figures:', error);
+    }
+  };
+
+  fetchFigures();
+}, []);
       
       // Extract unique tags
       const tags = new Set<string>();
