@@ -2,7 +2,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['drive.google.com'], ['sikhiwiki.org'], // Add any other domains you'll load images from
+    domains: ['drive.google.com'], // Add any other domains you'll load images from
   },
 };
 
