@@ -1,4 +1,3 @@
-// app/page.tsx
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -48,15 +47,17 @@ export default function Home() {
       setIsLoading(true);
       const response = await fetch('api/figures');
       if (!response.ok) {
-       throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
       setFigures(data);
 
-            // Extract unique tags
+      // Extract unique tags - modified to handle single tags
       const tags = new Set<string>();
       data.forEach((figure: HistoricalFigure) => {
-        figure.tags.split(',').forEach(tag => tags.add(tag.trim()));
+        if (figure.tags) {
+          tags.add(figure.tags.trim());
+        }
       });
       setAvailableTags(Array.from(tags));
       setIsLoading(false);
@@ -66,6 +67,7 @@ export default function Home() {
       setIsLoading(false);
     }
   };
+
   const filterFigures = () => {
     let filtered = [...figures];
 
@@ -77,10 +79,10 @@ export default function Home() {
       );
     }
 
-    // Filter by tag
+    // Filter by tag - modified to handle single tags
     if (selectedTag && selectedTag !== 'all') {
       filtered = filtered.filter(figure => 
-        figure.tags.toLowerCase().includes(selectedTag.toLowerCase())
+        figure.tags?.toLowerCase() === selectedTag.toLowerCase()
       );
     }
 
@@ -180,10 +182,8 @@ export default function Home() {
                   {figure.birthYear} - {figure.deathYear}
                 </p>
                 
-                {/* Hover content */}
                 <p className="mt-2 text-sm text-gray-600">{figure.oneLiner}</p>
                 
-                {/* Expanded content */}
                 {expandedFigure === figure.id && (
                   <div className="mt-4 space-y-2 border-t pt-4">
                     <div>
@@ -195,17 +195,10 @@ export default function Home() {
                       <p className="text-sm text-gray-600">{figure.notableAssociates}</p>
                     </div>
                     <div>
-                      <h5 className="text-sm font-semibold">Tags:</h5>
-                      <div className="flex flex-wrap gap-1 mt-1">
-                        {figure.tags.split(',').map((tag, index) => (
-                          <span
-                            key={index}
-                            className="px-2 py-1 text-xs bg-gray-100 rounded-full text-gray-600"
-                          >
-                            {tag.trim()}
-                          </span>
-                        ))}
-                      </div>
+                      <h5 className="text-sm font-semibold">Tag:</h5>
+                      <span className="px-2 py-1 text-xs bg-gray-100 rounded-full text-gray-600">
+                        {figure.tags}
+                      </span>
                     </div>
                   </div>
                 )}
@@ -222,4 +215,5 @@ export default function Home() {
       </div>
     </div>
   );
+}
 }
