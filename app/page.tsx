@@ -49,7 +49,7 @@ const [figures, setFigures] = useState([]);
 useEffect(() => {
   const fetchFigures = async () => {
     try {
-      const response = await fetch('/api/figures');
+      const response = await fetch('/pages/api/figures');
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
