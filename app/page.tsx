@@ -71,26 +71,56 @@ export default function Home() {
   const filterFigures = () => {
     let filtered = [...figures];
 
-    // Filter by search term
-    if (searchTerm) {
-      filtered = filtered.filter(figure => 
-        figure.englishName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        figure.punjabiName.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+const fetchFigures = async () => {
+  try {
+    setIsLoading(true);
+    const response = await fetch('api/figures');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
+    const data = await response.json();
+    setFigures(data);
 
-    // Filter by tag - modified to handle single tags
-    if (selectedTag && selectedTag !== 'all') {
-      filtered = filtered.filter(figure => 
-        figure.tags?.toLowerCase() === selectedTag.toLowerCase()
-      );
-    }
+    // Extract unique tags - modified to safely handle undefined/null tags
+    const tags = new Set<string>();
+    data.forEach((figure: HistoricalFigure) => {
+      if (figure.tags && typeof figure.tags === 'string') {
+        tags.add(figure.tags.trim());
+      }
+    });
+    setAvailableTags(Array.from(tags));
+    setIsLoading(false);
+  } catch (error) {
+    console.error('Error fetching figures:', error);
+    setError(error instanceof Error ? error.message : 'An error occurred');
+    setIsLoading(false);
+  }
+};
 
-    // Sort by death year
-    filtered.sort((a, b) => (a.deathYear || 0) - (b.deathYear || 0));
+const filterFigures = () => {
+  let filtered = [...figures];
 
-    setFilteredFigures(filtered);
-  };
+  // Filter by search term
+  if (searchTerm) {
+    filtered = filtered.filter(figure => 
+      figure.englishName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      figure.punjabiName.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }
+
+  // Filter by tag - modified to safely handle undefined/null tags
+  if (selectedTag && selectedTag !== 'all') {
+    filtered = filtered.filter(figure => 
+      figure.tags && typeof figure.tags === 'string' && 
+      figure.tags.trim().toLowerCase() === selectedTag.toLowerCase()
+    );
+  }
+
+  // Sort by death year
+  filtered.sort((a, b) => (a.deathYear || 0) - (b.deathYear || 0));
+
+  setFilteredFigures(filtered);
+};
 
   if (error) {
     return (
