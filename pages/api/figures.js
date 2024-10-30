@@ -6,8 +6,8 @@ export default async function handler(req, res) {
   }
 
   try {
-    const API_KEY = process.env.GOOGLE_SHEETS_API_KEY;
-    const SPREADSHEET_ID = process.env.GOOGLE_SHEET_ID;
+    const GOOGLE_SHEETS_API_KEY = process.env.GOOGLE_SHEETS_API_KEY;
+    const GOOGLE_SHEET_ID = process.env.GOOGLE_SHEET_ID;
     const RANGE = 'Sheet1!A2:I';
 
     const response = await fetch(
