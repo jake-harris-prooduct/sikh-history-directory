@@ -11,7 +11,7 @@ export default async function handler(req, res) {
     const RANGE = 'Sheet1!A2:I';
 
     const response = await fetch(
-      `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEET_ID}/values/${RANGE}?key=${API_KEY}`
+      `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEET_ID}/values/${RANGE}?key=${GOOGLE_SHEETS_API_KEY}`
     );
 
     if (!response.ok) {
