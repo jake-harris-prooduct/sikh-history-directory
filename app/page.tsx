@@ -53,6 +53,22 @@ export default function Home() {
       const data = await response.json();
       setFigures(data);
 
+            // Extract unique tags
+      const tags = new Set<string>();
+      data.forEach((figure: HistoricalFigure) => {
+        figure.tags.split(',').forEach(tag => tags.add(tag.trim()));
+      });
+      setAvailableTags(Array.from(tags));
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Error fetching figures:', error);
+      setError(error instanceof Error ? error.message : 'An error occurred');
+      setIsLoading(false);
+    }
+  };
+  const filterFigures = () => {
+    let filtered = [...figures];
+
     // Filter by search term
     if (searchTerm) {
       filtered = filtered.filter(figure => 
