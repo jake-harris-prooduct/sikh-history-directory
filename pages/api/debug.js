@@ -1,4 +1,4 @@
-// pages/api/debug-detailed.js
+// pages/api/debug.js
 export default async function handler(req, res) {
   const debug = {
     env: {
