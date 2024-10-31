@@ -20,7 +20,7 @@ interface HistoricalFigure {
   deathYear: number;
   oneLiner: string;
   knownFor: string;
-  tags: string;
+  tags: string[];
   notableAssociates: string;
   imageUrl: string;
 }
@@ -43,60 +43,61 @@ export default function Home() {
     filterFigures();
   }, [searchTerm, selectedTag, figures]);
 
-  const fetchFigures = async () => {
-    try {
-      setIsLoading(true);
-      const response = await fetch('api/figures');
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+const fetchFigures = async () => {
+  try {
+    setIsLoading(true);
+    const response = await fetch('api/figures');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    console.log('Received data:', data); // Debug log
+    setFigures(data);
+
+    // Extract unique tags
+    const tags = new Set<string>();
+    data.forEach((figure: HistoricalFigure) => {
+      if (Array.isArray(figure.tags)) {
+        figure.tags.forEach(tag => {
+          if (tag) tags.add(tag.trim());
+        });
       }
-      const data = await response.json();
-      setFigures(data);
+    });
+    
+    const uniqueTags = Array.from(tags);
+    console.log('Available tags:', uniqueTags); // Debug log
+    setAvailableTags(uniqueTags);
+    setIsLoading(false);
+  } catch (error) {
+    console.error('Error fetching figures:', error);
+    setError(error instanceof Error ? error.message : 'An error occurred');
+    setIsLoading(false);
+  }
+};
 
-      // Extract unique tags - modified to safely handle undefined/null tags
-      const tags = new Set<string>();
-      data.forEach((figure: HistoricalFigure) => {
-        if (figure.tags && typeof figure.tags === 'string') {
-          tags.add(figure.tags.trim());
-        }
-      });
+const filterFigures = () => {
+  let filtered = [...figures];
 
-          const finalTags = Array.from(tags);
-    console.log('Available tags:', finalTags); // Check final tags array
-      
-      setAvailableTags(Array.from(tags));
-      setIsLoading(false);
-    } catch (error) {
-      console.error('Error fetching figures:', error);
-      setError(error instanceof Error ? error.message : 'An error occurred');
-      setIsLoading(false);
-    }
-  };
+  // Filter by search term
+  if (searchTerm) {
+    filtered = filtered.filter(figure => 
+      figure.englishName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      figure.punjabiName.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }
 
-  const filterFigures = () => {
-    let filtered = [...figures];
+  // Filter by tag
+  if (selectedTag && selectedTag !== 'all') {
+    filtered = filtered.filter(figure => 
+      Array.isArray(figure.tags) && 
+      figure.tags.some(tag => tag.toLowerCase() === selectedTag.toLowerCase())
+    );
+  }
 
-    // Filter by search term
-    if (searchTerm) {
-      filtered = filtered.filter(figure => 
-        figure.englishName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        figure.punjabiName.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    // Filter by tag
-    if (selectedTag && selectedTag !== 'all') {
-      filtered = filtered.filter(figure => 
-        figure.tags && typeof figure.tags === 'string' && 
-        figure.tags.trim().toLowerCase() === selectedTag.toLowerCase()
-      );
-    }
-
-    // Sort by death year
-    filtered.sort((a, b) => (a.deathYear || 0) - (b.deathYear || 0));
-
-    setFilteredFigures(filtered);
-  };
+  // Sort by death year
+  filtered.sort((a, b) => (a.deathYear || 0) - (b.deathYear || 0));
+  setFilteredFigures(filtered);
+};
 
   if (error) {
     return (
@@ -198,17 +199,19 @@ export default function Home() {
                     <h5 className="text-sm font-semibold">Known for:</h5>
                     <p className="text-sm text-gray-600">{figure.knownFor}</p>
                   </div>
-                  <div>
-                    <h5 className="text-sm font-semibold">Notable Associates:</h5>
-                    <p className="text-sm text-gray-600">{figure.notableAssociates}</p>
-                  </div>
-                  <div>
-                    <h5 className="text-sm font-semibold">Tag:</h5>
-                    <span className="px-2 py-1 text-xs bg-gray-100 rounded-full text-gray-600">
-                      {figure.tags}
-                    </span>
-                  </div>
-                </div>
+<div>
+  <h5 className="text-sm font-semibold">Tags:</h5>
+  <div className="flex flex-wrap gap-1">
+    {figure.tags.map((tag, index) => (
+      <span 
+        key={`${figure.id}-${tag}-${index}`} 
+        className="px-2 py-1 text-xs bg-gray-100 rounded-full text-gray-600"
+      >
+        {tag}
+      </span>
+    ))}
+  </div>
+</div>
               )}
             </CardContent>
           </div>
