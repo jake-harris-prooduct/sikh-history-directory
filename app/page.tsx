@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
 import { Card, CardContent } from "@/components/ui/card";
+import { getGoogleDriveImageUrl } from "@/lib/utils"
 import {
   Select,
   SelectContent,
@@ -171,12 +172,12 @@ export default function Home() {
             >
               <CardContent className="p-4">
                 <div className="aspect-square relative mb-4">
-                  <img
-                    src={figure.imageUrl || "/api/placeholder/400/400"}
-                    alt={figure.englishName}
-                    className="w-full h-full object-cover rounded-md"
-                  />
-                </div>
+  <img
+    src={getGoogleDriveImageUrl(figure.imageUrl)}
+    alt={figure.englishName}
+    className="w-full h-full object-cover rounded-md"
+  />
+</div>
                 <h3 className="text-lg font-semibold">{figure.englishName}</h3>
                 <h4 className="text-md text-gray-600">{figure.punjabiName}</h4>
                 <p className="text-sm text-gray-500">
