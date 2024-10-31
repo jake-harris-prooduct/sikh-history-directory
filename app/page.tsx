@@ -171,13 +171,12 @@ export default function Home() {
               onClick={() => setExpandedFigure(expandedFigure === figure.id ? null : figure.id)}
             >
               <CardContent className="p-4">
-                <div className="aspect-square relative mb-4">
-  <img
-    src={getGoogleDriveImageUrl(figure.imageUrl)}
-    alt={figure.englishName}
-    className="w-full h-full object-cover rounded-md"
-  />
-</div>
+<div className="aspect-square relative mb-4">
+                  <img
+                    src={figure.imageUrl || "/api/placeholder/400/400"}
+                    alt={figure.englishName}
+                    className="w-full h-full object-cover rounded-md"
+                  />
                 <h3 className="text-lg font-semibold">{figure.englishName}</h3>
                 <h4 className="text-md text-gray-600">{figure.punjabiName}</h4>
                 <p className="text-sm text-gray-500">
