@@ -174,7 +174,7 @@ export default function Home() {
             <CardContent className="p-4">
               <div className="relative mb-4 shadow-md" style={{ aspectRatio: '4/5' }}>
                 <img
-                  src={figure.imageUrl || "/api/placeholder/300/400"}
+                  src={figure.imageUrl || "/api/placeholder/400/500"}
                   alt={figure.englishName}
                   className="w-full h-full object-cover rounded-sm"
                 />
