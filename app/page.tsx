@@ -167,7 +167,7 @@ export default function Home() {
           {filteredFigures.map((figure) => (
             <Card 
               key={figure.id}
-              className="cursor-pointer transition-all duration-300 hover:shadow-lg"
+              className="cursor-pointer transition-all duration-300 hover:shadow-lg border-4 border-yellow-600"
               onClick={() => setExpandedFigure(expandedFigure === figure.id ? null : figure.id)}
             >
               <CardContent className="p-4">
