@@ -170,7 +170,7 @@ export default function Home() {
           className="cursor-pointer transition-all duration-300 hover:shadow-xl relative bg-[#2C1810] p-1 rounded-none"
           onClick={() => setExpandedFigure(expandedFigure === figure.id ? null : figure.id)}
         >
-          <div className="border-8 border-[#DAA520] bg-white">
+          <div className="border-10 border-[#DAA520] bg-white">
             <CardContent className="p-4">
               <div className="relative mb-4 shadow-md" style={{ aspectRatio: '2/3' }}>
                 <img
