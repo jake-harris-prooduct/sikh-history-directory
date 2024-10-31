@@ -177,6 +177,7 @@ export default function Home() {
                     alt={figure.englishName}
                     className="w-full h-full object-cover rounded-md"
                   />
+ </div> 
                 <h3 className="text-lg font-semibold">{figure.englishName}</h3>
                 <h4 className="text-md text-gray-600">{figure.punjabiName}</h4>
                 <p className="text-sm text-gray-500">
