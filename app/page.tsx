@@ -163,52 +163,54 @@ export default function Home() {
           </Select>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {filteredFigures.map((figure) => (
-            <Card 
-              key={figure.id}
-              className="cursor-pointer transition-all duration-300 hover:shadow-lg border-4 border-yellow-600"
-              onClick={() => setExpandedFigure(expandedFigure === figure.id ? null : figure.id)}
-            >
-              <CardContent className="p-4">
-<div className="aspect-square relative mb-4">
-                  <img
-                    src={figure.imageUrl || "/api/placeholder/400/400"}
-                    alt={figure.englishName}
-                    className="w-full h-full object-cover rounded-md"
-                  />
- </div> 
-     <div className="text-center">
-              <h3 className="text-lg font-semibold">{figure.englishName}</h3>
-              <h4 className="text-md text-gray-600">{figure.punjabiName}</h4>
-              <p className="text-sm text-gray-500">
-                {figure.birthYear} - {figure.deathYear}
-              </p>
-              <p className="mt-2 text-sm text-gray-600">{figure.oneLiner}</p>
-            </div>
-                
-                {expandedFigure === figure.id && (
-                  <div className="mt-4 space-y-2 border-t pt-4">
-                    <div>
-                      <h5 className="text-sm font-semibold">Known for:</h5>
-                      <p className="text-sm text-gray-600">{figure.knownFor}</p>
-                    </div>
-                    <div>
-                      <h5 className="text-sm font-semibold">Notable Associates:</h5>
-                      <p className="text-sm text-gray-600">{figure.notableAssociates}</p>
-                    </div>
-                    <div>
-                      <h5 className="text-sm font-semibold">Tag:</h5>
-                      <span className="px-2 py-1 text-xs bg-gray-100 rounded-full text-gray-600">
-                        {figure.tags}
-                      </span>
-                    </div>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {filteredFigures.map((figure) => (
+        <Card 
+          key={figure.id}
+          className="cursor-pointer transition-all duration-300 hover:shadow-xl relative bg-[#2C1810] p-1"
+          onClick={() => setExpandedFigure(expandedFigure === figure.id ? null : figure.id)}
+        >
+          <div className="border-4 border-[#DAA520] bg-white">
+            <CardContent className="p-4">
+              <div className="aspect-square relative mb-4 shadow-md">
+                <img
+                  src={figure.imageUrl || "/api/placeholder/400/400"}
+                  alt={figure.englishName}
+                  className="w-full h-full object-cover rounded-sm"
+                />
+              </div>
+              <div className="text-center">
+                <h3 className="text-lg font-semibold">{figure.englishName}</h3>
+                <h4 className="text-md text-gray-600">{figure.punjabiName}</h4>
+                <p className="text-sm text-gray-500">
+                  {figure.birthYear} - {figure.deathYear}
+                </p>
+                <p className="mt-2 text-sm text-gray-600">{figure.oneLiner}</p>
+              </div>
+
+              {expandedFigure === figure.id && (
+                <div className="mt-4 space-y-2 border-t pt-4">
+                  <div>
+                    <h5 className="text-sm font-semibold">Known for:</h5>
+                    <p className="text-sm text-gray-600">{figure.knownFor}</p>
                   </div>
-                )}
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                  <div>
+                    <h5 className="text-sm font-semibold">Notable Associates:</h5>
+                    <p className="text-sm text-gray-600">{figure.notableAssociates}</p>
+                  </div>
+                  <div>
+                    <h5 className="text-sm font-semibold">Tag:</h5>
+                    <span className="px-2 py-1 text-xs bg-gray-100 rounded-full text-gray-600">
+                      {figure.tags}
+                    </span>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </div>
+        </Card>
+      ))}
+    </div>
         
         {filteredFigures.length === 0 && (
           <div className="text-center py-12">
