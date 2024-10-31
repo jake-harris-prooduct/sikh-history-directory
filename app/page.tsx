@@ -172,9 +172,9 @@ export default function Home() {
         >
           <div className="border-8 border-[#DAA520] bg-white">
             <CardContent className="p-4">
-              <div className="aspect-square relative mb-4 shadow-md">
+              <div className="relative mb-4 shadow-md" style={{ aspectRatio: '3/4' }}>
                 <img
-                  src={figure.imageUrl || "/api/placeholder/400/400"}
+                  src={figure.imageUrl || "/api/placeholder/300/400"}
                   alt={figure.englishName}
                   className="w-full h-full object-cover rounded-sm"
                 />
