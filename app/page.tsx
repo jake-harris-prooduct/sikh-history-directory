@@ -178,13 +178,14 @@ export default function Home() {
                     className="w-full h-full object-cover rounded-md"
                   />
  </div> 
-                <h3 className="text-lg font-semibold">{figure.englishName}</h3>
-                <h4 className="text-md text-gray-600">{figure.punjabiName}</h4>
-                <p className="text-sm text-gray-500">
-                  {figure.birthYear} - {figure.deathYear}
-                </p>
-                
-                <p className="mt-2 text-sm text-gray-600">{figure.oneLiner}</p>
+     <div className="text-center">
+              <h3 className="text-lg font-semibold">{figure.englishName}</h3>
+              <h4 className="text-md text-gray-600">{figure.punjabiName}</h4>
+              <p className="text-sm text-gray-500">
+                {figure.birthYear} - {figure.deathYear}
+              </p>
+              <p className="mt-2 text-sm text-gray-600">{figure.oneLiner}</p>
+            </div>
                 
                 {expandedFigure === figure.id && (
                   <div className="mt-4 space-y-2 border-t pt-4">
