@@ -60,6 +60,10 @@ export default function Home() {
           tags.add(figure.tags.trim());
         }
       });
+
+          const finalTags = Array.from(tags);
+    console.log('Available tags:', finalTags); // Check final tags array
+      
       setAvailableTags(Array.from(tags));
       setIsLoading(false);
     } catch (error) {
