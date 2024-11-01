@@ -46,7 +46,7 @@ export default function Home() {
 const fetchFigures = async () => {
   try {
     setIsLoading(true);
-    const response = await fetch('api/figures');
+    const response = await fetch('/api/figures');
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -212,6 +212,7 @@ const filterFigures = () => {
     ))}
   </div>
 </div>
+                  </div>
               )}
             </CardContent>
           </div>
